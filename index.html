@@ -83,12 +83,29 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:18px 16px 30px}
 #seeBtn{display:none;position:fixed;right:14px;bottom:76px;z-index:21;border:0;border-radius:999px;background:var(--ciel);color:#fff;font:800 14px/1 MCV-H,Arial;padding:12px 16px;box-shadow:0 6px 18px rgba(11,31,77,.3)}
 @media(max-width:980px){#seeBtn{display:block}}
 .hide{display:none!important}
+.hbtns{display:flex;gap:8px;align-items:center}
+.pill.docs{background:#e4ebfd;color:var(--bleu)}
+@media(max-width:620px){#docsBtn{display:none}}.sbtn.docs{background:#e4ebfd;color:var(--bleu);box-shadow:none}
+.docbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f3f5fb;border:1.5px solid var(--ligne);border-radius:12px;padding:9px 10px;margin-bottom:14px}
+.docbar .dn{flex:1;min-width:150px;font:700 14px/1.25 MCV-B,Arial}.docbar .dn small{display:block;font:500 12px/1.3 MCV-R,Arial;color:var(--mut);margin-top:2px}
+.sbtn{border:0;border-radius:10px;padding:9px 12px;font:700 13px/1 MCV-B,Arial;cursor:pointer;background:#fff;color:var(--encre);box-shadow:0 0 0 1.5px var(--ligne) inset;white-space:nowrap}
+.sbtn.p{background:var(--bleu);color:#fff;box-shadow:none}.sbtn.d{color:#b42318}.sbtn.dd{background:#b42318;color:#fff;box-shadow:none}
+.box.wide{max-width:560px}
+.dnew{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 14px}
+.dsec{font:800 12px/1 MCV-H,Arial;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu);margin:14px 0 8px}
+.ditem{border:1.5px solid var(--ligne);border-radius:12px;padding:11px;margin-bottom:9px;background:#fbfbfd}
+.ditem.cur{border-color:var(--ciel);background:#f2f6ff}
+.ditem .t{font:700 15px/1.3 MCV-B,Arial;word-break:break-word}.ditem .m{font-size:12.5px;color:var(--mut);margin:3px 0 9px}
+.ditem .a{display:flex;gap:6px;flex-wrap:wrap}
+.ditem input{width:100%;border:1.5px solid var(--ciel);border-radius:9px;padding:8px 10px;font-size:15px;margin-bottom:8px}
+.dempty{color:var(--mut);font-size:14px;background:#f6f7fb;border-radius:12px;padding:14px;text-align:center}
+.lock{background:var(--encre);color:#fff;border-radius:14px;padding:16px;margin-top:6px}.lock p{opacity:.88;font-size:14px;margin:6px 0 12px}
 </style>
 </head>
 <body>
 <header>
   <a class="logo" href="#"><div class="ic">CV+</div><div><div class="w"><span>Mon</span>CV<i>+</i></div><small>BY MOSES GRAPHITY</small></div></a>
-  <button class="pill" id="passBtn">Activer mon Pass</button>
+  <div class="hbtns"><button class="pill docs" id="docsBtn" type="button">📁 Mes documents</button><button class="pill" id="passBtn">Activer mon Pass</button></div>
 </header>
 <section class="hero">
   <h1>Votre <b>CV</b> et votre <b>lettre de motivation</b> professionnels, prêts en 10 minutes.</h1>
@@ -97,6 +114,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:18px 16px 30px}
 <div class="tabs"><button data-t="cv" class="on">Mon CV</button><button data-t="lm">Ma lettre de motivation</button></div>
 <main>
   <div class="panel">
+    <div class="docbar" id="docbar"><div class="dn" id="docName">Nouveau document<small id="docInfo">Non enregistré</small></div><button class="sbtn p" id="docSave" type="button">Enregistrer</button><button class="sbtn" id="docNew" type="button">＋ Nouveau</button><button class="sbtn docs" id="docsBtn2" type="button">📁 Mes documents</button></div>
     <!-- ================= CV ================= -->
     <div id="fCV">
       <h2>1 · Modèle</h2>
@@ -176,6 +194,11 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:18px 16px 30px}
   <div class="step"><b>1</b><p>Envoyez <b>2 000 FCFA</b> par <b>Orange Money</b> ou <b>Wave</b> au <b>64 37 95 97</b> (MOSES GRAPHITY).</p></div>
   <div class="step"><b>2</b><div><p>Envoyez-nous ce code appareil sur WhatsApp :</p><div class="devc" id="devc">CV-....-....</div><a class="btn w" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">Envoyer sur WhatsApp</a></div></div>
   <div class="step"><b>3</b><div style="flex:1"><p>Collez ici le code reçu :</p><textarea id="code" style="min-height:66px;font-size:14px;margin-top:8px" placeholder="CVP1. …"></textarea><button class="btn p" id="act" style="width:100%;margin-top:8px">Activer</button><p class="msg" id="actMsg"></p></div></div>
+</div></div>
+<div class="modal" id="dmodal"><div class="box wide">
+  <button class="close" id="dClose" aria-label="Fermer">×</button>
+  <h3>Mes documents</h3><p class="sub">Tous vos CV et lettres, enregistrés sur cet appareil. Ouvrez-en un pour le modifier.</p>
+  <div id="dBody"></div>
 </div></div>
 <div class="toast" id="toast"></div>
 <script>/** @license
@@ -635,7 +658,7 @@ var S;try{S=JSON.parse(st('moncv-data')||'null')}catch(e){S=null}
 if(!S){S=JSON.parse(JSON.stringify(D0))}
 if(!S.L)S.L=JSON.parse(JSON.stringify(D0.L));if(!S.L.style)S.L.style='prestige';if(!S.L.genre)S.L.genre='m';
 var PHOTO=null;function loadPhoto(){if(!S.photo){PHOTO=null;return Promise.resolve()}return new Promise(function(r){var i=new Image();i.onload=function(){PHOTO=i;r()};i.onerror=function(){PHOTO=null;r()};i.src=S.photo})}
-var saveT=0;function save(){clearTimeout(saveT);saveT=setTimeout(function(){try{st('moncv-data',JSON.stringify(S))}catch(e){}},400)}
+var saveT=0;function save(){clearTimeout(saveT);saveT=setTimeout(function(){try{st('moncv-data',JSON.stringify(S))}catch(e){}if(window.__docAuto)window.__docAuto()},400)}
 function today(){var m=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'],d=new Date();return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear()}
 if(!S.L.date)S.L.date=today();
 /* ---------- moteur de dessin multi-pages (canvas + PDF) ---------- */
@@ -985,7 +1008,7 @@ function thumbs(){TPL.forEach(function(t){var c=document.querySelector('.tpl[dat
 function ui(){var u=unlocked();$('wmNote').textContent=u?('Pass actif'+(PASS.name?' · '+PASS.name:'')+' : PDF sans filigrane.'):'Version démo : le PDF porte un filigrane.';$('offer').classList.toggle('hide',u);$('bar').classList.toggle('hide',u);$('passBtn').textContent=u?'Pass actif ✓':'Activer mon Pass';$('passBtn').classList.toggle('ok',u)}
 function fname(){return (MODE==='cv'?'CV_':'Lettre_')+(S.nom||'MonCV').replace(/[^A-Za-z0-9À-ÿ]+/g,'_')+'.pdf'}
 function makePdf(){var dev=PdfDev();drawDoc(dev);if(!unlocked())wmPdf(dev.doc);return dev.doc}
-$('dl').onclick=function(){try{var doc=makePdf();doc.save(fname());toast('PDF téléchargé')}catch(e){console.error(e);toast('Erreur PDF : '+e.message)}};
+$('dl').onclick=function(){try{var doc=makePdf();doc.save(fname());if(unlocked()){var had=curDoc();saveDoc(true);toast(had?'PDF téléchargé · document à jour':'PDF téléchargé · enregistré dans Mes documents')}else toast('PDF téléchargé')}catch(e){console.error(e);toast('Erreur PDF : '+e.message)}};
 $('share').onclick=function(){try{var b=makePdf().output('blob'),f=new File([b],fname(),{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:fname()}).catch(function(){});else{makePdf().save(fname());toast('PDF téléchargé : ajoutez-le dans WhatsApp ou votre e-mail')}}catch(e){toast('Erreur : '+e.message)}};
 
 /* ---------- formulaire ---------- */
@@ -1009,18 +1032,67 @@ function setPhotoUI(){$('phT').textContent=S.photo?'Photo ajoutée':'Ajouter une
 $('ph').addEventListener('change',function(){var f=this.files[0];if(!f)return;var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var m=700,r=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.photo=c.toDataURL('image/jpeg',.85);save();setPhotoUI();loadPhoto().then(function(){preview();thumbsSoon()})};im.onerror=function(){toast('Image illisible')};im.src=u;this.value=''});
 $('phX').addEventListener('click',function(e){e.preventDefault();e.stopPropagation();S.photo=null;PHOTO=null;save();setPhotoUI();preview();thumbsSoon()});
 /* onglets */
-document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){MODE=b.dataset.t;document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});$('fCV').classList.toggle('hide',MODE!=='cv');$('fLM').classList.toggle('hide',MODE!=='lm');if(MODE==='lm'&&!S.L.corps){genLetter();bindFields()}preview()}});
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){MODE=b.dataset.t;document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});$('fCV').classList.toggle('hide',MODE!=='cv');$('fLM').classList.toggle('hide',MODE!=='lm');if(MODE==='lm'&&!S.L.corps){genLetter();fillFields()}st('moncv-mode',MODE);docBar();preview()}});
 $('ltype').value=S.L.type||'offre';$('ltype').onchange=function(){S.L.type=this.value;$('lPoste').textContent=(LT[S.L.type]||LT.offre).poste;save()};$('lPoste').textContent=(LT[S.L.type]||LT.offre).poste;
 $('genLM').onclick=function(){genLetter();document.querySelector('[data-l="objet"]').value=S.L.objet;document.querySelector('[data-l="corps"]').value=S.L.corps;save();preview();toast('Lettre rédigée : relisez et adaptez-la')};
 /* Pass */
 function waLink(){$('waBtn').href='https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour MOSES GRAPHITY, je veux le Pass MonCV+ ('+PRIX+' F). Mon code appareil : '+dev()+'. Nom : ')}
 function openM(){$('devc').textContent=dev();waLink();$('actMsg').textContent='';$('modal').classList.add('on')}
 $('passBtn').onclick=openM;$('barBtn').onclick=openM;$('offerBtn').onclick=openM;$('mClose').onclick=function(){$('modal').classList.remove('on')};$('modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('on')});
-$('act').onclick=function(){var c=$('code').value.trim(),r=check(c),m=$('actMsg');if(!r){m.className='msg bad';m.textContent="Code invalide pour cet appareil ("+dev()+").";return}PASS=r;st('moncv-lic',c.replace(/\s+/g,''));m.className='msg good';m.textContent='Pass activé. Merci '+r.name+' !';preview();setTimeout(function(){$('modal').classList.remove('on')},1300)};
+$('act').onclick=function(){var c=$('code').value.trim(),r=check(c),m=$('actMsg');if(!r){m.className='msg bad';m.textContent="Code invalide pour cet appareil ("+dev()+").";return}PASS=r;st('moncv-lic',c.replace(/\s+/g,''));m.className='msg good';m.textContent='Pass activé. Merci '+r.name+' !';preview();docBar();setTimeout(function(){$('modal').classList.remove('on')},1300)};
 $('seeBtn').onclick=function(){$('stage').scrollIntoView({behavior:'smooth',block:'start'})};
+
+/* ---------- MES DOCUMENTS (réservé au Pass) ---------- */
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function docsGet(){try{var a=JSON.parse(st('moncv-docs')||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+function docsPut(a){try{localStorage.setItem('moncv-docs',JSON.stringify(a));return true}catch(e){toast('Mémoire pleine : supprimez un ancien document');return false}}
+/* document ouvert, un par type : le CV en cours et la lettre en cours */
+var CUR;try{CUR=JSON.parse(st('moncv-cur')||'{}')}catch(e){CUR={}}if(!CUR||typeof CUR!=='object')CUR={};(function(){var ids=docsGet().map(function(d){return d.id});['cv','lm'].forEach(function(t){if(CUR[t]&&ids.indexOf(CUR[t])<0)CUR[t]=null})})();
+function setCur(t,id){CUR[t]=id||null;try{localStorage.setItem('moncv-cur',JSON.stringify(CUR))}catch(e){}}
+function autoName(t){if(t==='lm'){var L=S.L||{};return 'Lettre – '+(L.poste||(LT[L.type]||LT.offre).poste)+(L.structure?' · '+L.structure:'')}return 'CV – '+(S.titre||S.nom||'sans titre')}
+function fdate(ts){var d=new Date(ts),m=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear()+' à '+d.getHours()+'h'+('0'+d.getMinutes()).slice(-2)}
+function curDoc(){var a=docsGet();for(var i=0;i<a.length;i++)if(a[i].id===CUR[MODE]&&a[i].type===MODE)return a[i];return null}
+/* enregistre le document en cours (création ou mise à jour) */
+function saveDoc(silent,t){if(!unlocked()){openM();return null}t=t||MODE;var a=docsGet(),d=null,now=Date.now();for(var i=0;i<a.length;i++)if(a[i].id===CUR[t]&&a[i].type===t)d=a[i];
+ if(!d){if(silent==='auto')return null;d={id:'d'+now.toString(36)+Math.random().toString(36).slice(2,6),type:t,auto:true,cree:now};a.unshift(d)}
+ d.data=clone(S);d.maj=now;if(d.auto)d.nom=autoName(d.type);
+ if(!docsPut(a))return null;setCur(t,d.id);docBar();if(!silent)toast('Enregistré dans Mes documents');return d}
+/* mise à jour automatique du document ouvert à chaque modification */
+var dT=0;window.__docAuto=function(){if(!unlocked()||!CUR[MODE])return;var d=curDoc();if(!d)return;var t=MODE;clearTimeout(dT);dT=setTimeout(function(){saveDoc('auto',t)},300)};
+function docBar(){var d=curDoc(),ok=!!d;$('docName').firstChild.nodeValue=ok?d.nom:(MODE==='cv'?'Nouveau CV':'Nouvelle lettre');
+ $('docInfo').textContent=!unlocked()?'Avec le Pass, vos documents sont gardés dans « Mes documents »':(ok?'Enregistré automatiquement · '+fdate(d.maj):'Pas encore enregistré');
+ $('docSave').textContent=ok?'Enregistrer une copie':'Enregistrer'}
+/* remplit le formulaire avec S (sans rebrancher les écouteurs) */
+function fillFields(){document.querySelectorAll('[data-k]').forEach(function(el){el.value=S[el.dataset.k]||''});document.querySelectorAll('[data-l]').forEach(function(el){el.value=(S.L||{})[el.dataset.l]||''});$('ltype').value=S.L.type||'offre';$('lPoste').textContent=(LT[S.L.type]||LT.offre).poste}
+function showMode(m){MODE=m;st('moncv-mode',m);document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.t===m)});$('fCV').classList.toggle('hide',m!=='cv');$('fLM').classList.toggle('hide',m!=='lm')}
+function loadState(data,mode){S=clone(data);if(!S.L)S.L=clone(D0.L);if(!S.L.date)S.L.date=today();if(!CVR[S.tpl]){S.tpl='ardoise';S.color='#E8742A'}window.__CV.S=S;
+ showMode(mode);fillFields();buildTop();buildList('exp');buildList('for');setPhotoUI();try{st('moncv-data',JSON.stringify(S))}catch(e){}docBar();loadPhoto().then(function(){preview();thumbs()});window.scrollTo({top:0,behavior:'smooth'})}
+function blankL(){var L=clone(D0.L);Object.keys(L).forEach(function(k){if(['type','style','genre'].indexOf(k)<0)L[k]=''});L.date=today();L.ville=(S.L&&S.L.ville)||'';return L}
+function newCV(){var n={tpl:S.tpl,color:S.color,photo:null,exp:[{}],for:[{}],L:blankL()};Object.keys(D0).forEach(function(k){if(n[k]===undefined&&k!=='L')n[k]=''});setCur('cv',null);setCur('lm',null);loadState(n,'cv');toast('Nouveau CV : remplissez vos informations')}
+function newLM(){var n=clone(S);n.L=blankL();setCur('lm',null);loadState(n,'lm');toast('Nouvelle lettre : vos coordonnées sont reprises du CV')}
+function openDoc(id){var a=docsGet();for(var i=0;i<a.length;i++)if(a[i].id===id){var ty=a[i].type;setCur(ty,id);setCur(ty==='cv'?'lm':'cv',null);loadState(a[i].data,ty);$('dmodal').classList.remove('on');toast('Document ouvert : vos modifications sont enregistrées automatiquement');return}}
+function dupDoc(id){var a=docsGet();for(var i=0;i<a.length;i++)if(a[i].id===id){var c=clone(a[i]),now=Date.now();c.id='d'+now.toString(36)+Math.random().toString(36).slice(2,6);c.nom=a[i].nom+' (copie)';c.auto=false;c.cree=c.maj=now;a.splice(i,0,c);if(docsPut(a)){toast('Copie créée');renderDocs()}return}}
+function delDoc(id){var a=docsGet().filter(function(d){return d.id!==id});if(docsPut(a)){['cv','lm'].forEach(function(t){if(CUR[t]===id)setCur(t,null)});docBar();renderDocs();toast('Document supprimé')}}
+function renameDoc(id,nom){var a=docsGet();a.forEach(function(d){if(d.id===id&&nom.trim()){d.nom=nom.trim();d.auto=false}});if(docsPut(a)){docBar();renderDocs()}}
+function renderDocs(){var b=$('dBody');
+ if(!unlocked()){b.innerHTML='<div class="lock"><h3 style="font:800 17px/1.2 MCV-H,Arial">Réservé au Pass MonCV+</h3><p>Créez autant de CV et de lettres que vous voulez. Ils restent dans « Mes documents » : vous les retrouvez et les modifiez à chaque visite, sans tout recommencer.</p><button class="btn" id="dPass" style="width:100%;background:var(--ciel);color:#fff">Obtenir le Pass · '+PRIX+' FCFA</button></div>';$('dPass').onclick=function(){$('dmodal').classList.remove('on');openM()};return}
+ var a=docsGet(),h='<div class="dnew"><button class="sbtn p" id="dNewCV" type="button">＋ Nouveau CV</button><button class="sbtn p" id="dNewLM" type="button">＋ Nouvelle lettre</button></div>';
+ function sec(t,ty){var l=a.filter(function(d){return d.type===ty});h+='<div class="dsec">'+t+' ('+l.length+')</div>';if(!l.length){h+='<div class="dempty">Aucun document pour le moment.</div>';return}
+  l.forEach(function(d){h+='<div class="ditem'+(d.id===CUR[d.type]?' cur':'')+'" data-id="'+d.id+'"><div class="t">'+esc(d.nom)+(d.id===CUR[d.type]?' <small style="color:var(--ciel)">· ouvert</small>':'')+'</div><div class="m">Modifié le '+fdate(d.maj)+'</div><div class="a"><button class="sbtn p" data-a="open">Ouvrir</button><button class="sbtn" data-a="dup">Dupliquer</button><button class="sbtn" data-a="ren">Renommer</button><button class="sbtn d" data-a="del">Supprimer</button></div></div>'})}
+ sec('Mes CV','cv');sec('Mes lettres de motivation','lm');
+ h+='<p class="note" style="margin-top:12px">Vos documents restent sur ce téléphone ou cet ordinateur. Si vous effacez les données du navigateur ou changez d\'appareil, ils ne suivent pas : gardez aussi vos PDF.</p>';
+ b.innerHTML=h;$('dNewCV').onclick=function(){$('dmodal').classList.remove('on');newCV()};$('dNewLM').onclick=function(){$('dmodal').classList.remove('on');newLM()};
+ b.querySelectorAll('.ditem').forEach(function(it){var id=it.dataset.id;it.querySelectorAll('[data-a]').forEach(function(btn){btn.onclick=function(){var k=btn.dataset.a;
+  if(k==='open')openDoc(id);else if(k==='dup')dupDoc(id);
+  else if(k==='del'){if(btn.classList.contains('dd'))delDoc(id);else{btn.classList.add('dd');btn.textContent='Confirmer la suppression';setTimeout(function(){if(btn.isConnected){btn.classList.remove('dd');btn.textContent='Supprimer'}},4000)}}
+  else if(k==='ren'){var t=it.querySelector('.t');if(it.querySelector('input'))return;var inp=document.createElement('input');inp.type='text';inp.value=docsGet().filter(function(d){return d.id===id})[0].nom;it.insertBefore(inp,t);t.classList.add('hide');inp.focus();inp.select();var done=function(){renameDoc(id,inp.value)};inp.addEventListener('keydown',function(e){if(e.key==='Enter')done();if(e.key==='Escape')renderDocs()});btn.textContent='Valider';btn.onclick=done}}})})}
+function openDocs(){renderDocs();$('dmodal').classList.add('on')}
+$('docsBtn').onclick=openDocs;$('docsBtn2').onclick=openDocs;$('dClose').onclick=function(){$('dmodal').classList.remove('on')};$('dmodal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('on')});
+$('docSave').onclick=function(){if(!unlocked()){openDocs();return}var d=curDoc();if(d){setCur(MODE,null);var c=saveDoc(true);if(c){toast('Copie enregistrée')}}else saveDoc()};
+$('docNew').onclick=function(){if(MODE==='lm')newLM();else newCV()};
 if(!CVR[S.tpl]){S.tpl='ardoise';S.color='#E8742A'}
 /* démarrage */
-buildTop();bindFields();buildList('exp');buildList('for');setPhotoUI();ui();
+buildTop();bindFields();buildList('exp');buildList('for');setPhotoUI();ui();if(st('moncv-mode')==='lm'&&S.L.corps)showMode('lm');docBar();
 fontsReady.then(loadPhoto).then(function(){preview();thumbs()},function(){preview();thumbs()});
 window.__CV={S:S,genLetter:genLetter,makePdf:makePdf,dev:dev,setMode:function(m){document.querySelector('.tabs button[data-t="'+m+'"]').click()},CVR:CVR};
 })();
